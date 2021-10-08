@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/create_type_product.yml
+  - include:
+      file: db/changelog/create_product.yml
+  - include:
+      file: db/changelog/inserts.yml

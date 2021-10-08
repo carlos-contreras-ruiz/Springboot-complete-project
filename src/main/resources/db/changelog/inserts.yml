@@ -1,0 +1,24 @@
+databaseChangeLog:
+  - preConditions:
+      - onFail: WARN
+      - sqlCheck:
+          expectedResult: 0
+          sql: select count(*) from databasechangelog where id = 'inserts'
+  - changeSet:
+      id: inserts
+      author: cc
+      changes:
+        - insert:
+            catalogName: department
+            columns:
+              - column:
+                  name: name
+                  value: fruta
+            tableName: type_product
+        - insert:
+            catalogName: department
+            columns:
+              - column:
+                  name: name
+                  value: verdura
+            tableName: type_product

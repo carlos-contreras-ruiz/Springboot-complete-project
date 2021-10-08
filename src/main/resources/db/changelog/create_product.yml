@@ -1,0 +1,37 @@
+databaseChangeLog:
+  - changeSet:
+      id: product
+      author: cc
+      changes:
+        - createTable:
+            tableName: product
+            columns:
+              - column:
+                  name: id
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(50)
+              - column:
+                  name: cost
+                  type: DECIMAL(12,2)
+              - column:
+                  name: type_product_id
+                  type: INT
+                  constraints:
+                    nullable: false
+
+  - changeset:
+      id: product_fk
+      author: cc
+      changes:
+        - addforeignKeyConstraint:
+            baseColumnNames: type_product_id
+            baseTableName: product
+            constraintName: fk_product_type_product
+            referencedColumnNames: id
+            referencedTableName: type_product

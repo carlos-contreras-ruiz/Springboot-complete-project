@@ -1,0 +1,18 @@
+databaseChangeLog:
+  - changeSet:
+      id: type_product
+      author: cc
+      changes:
+        - createTable:
+            tableName: type_product
+            columns:
+              - column:
+                  name: id
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(50)
