@@ -25,8 +25,9 @@ public class ItemRepositoryTest {
     @BeforeEach
     public void insertRecords(){
         List<ItemEntity> itemEntity = listItems();
-        entitySaved = itemRepository.save(itemEntity.get(0));
-        itemRepository.save(itemEntity.get(1));
+        itemEntity.stream().forEach((e)->{
+            entitySaved = itemRepository.save(e);
+        });
     }
 
     @Test
@@ -39,7 +40,7 @@ public class ItemRepositoryTest {
         Optional<ItemEntity> byId = itemRepository.findById(entitySaved.getId());
 
         if (byId.isPresent()) {
-            assertThat(byId.get().getName()).isEqualTo("Manzana");
+            assertThat(byId.get().getName()).isEqualTo(entitySaved.getName());
         } else {
             //Assert.isTrue(false);
             assertTrue(false);
