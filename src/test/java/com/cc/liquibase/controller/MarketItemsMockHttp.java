@@ -4,39 +4,45 @@ import com.cc.liquibase.dto.GeneralResponse;
 import com.cc.liquibase.dto.ItemDto;
 import com.cc.liquibase.dto.ItemTypeDto;
 import com.cc.liquibase.service.ItemService;
-import org.junit.Before;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+
+import static org.hamcrest.Matchers.containsString;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+//@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+//@SpringBootTest //When we use WebMvcTest we dont use this annotation
+//@AutoConfigureMockMvc
+@WebMvcTest(MarketItems.class)//Levanta una version mas ligera del servicio
+public class MarketItemsMockHttp {
 
-@SpringBootTest
-class MarketItemsTest {
-
-    @Mock
+    @MockBean//This is required on WebMvcTest annotation
     private ItemService itemsService;//For the mock annotations we can use the interface instead the implementation
 
-    @InjectMocks
-    private MarketItems marketItems;
+    @Autowired
+    private MockMvc mockMvc;
 
-    @Before
-    public void init() {
-        //MockitoAnnotations.initMocks(this);
-    }
-
-    @DisplayName("Get all items")
     @Test
-    void getItems() {
-
+    void getItems() throws Exception {
         List<ItemDto> itemDtos = Arrays.asList(ItemDto.builder()
                         .id(1)
                         .name("Manzana")
@@ -64,30 +70,15 @@ class MarketItemsTest {
         response.setBody(itemDtos);
         response.setError(false);
 
-        Mockito.doReturn(response).when(itemsService).getItems();
-        //Mockito.when(itemsService.getItems()).thenReturn(response);
+        //Mockito.doReturn(response).when(itemsService).getItems();
+        when(itemsService.getItems()).thenReturn(response);
 
-        ResponseEntity<GeneralResponse<List<ItemDto>>> itemsEntity = marketItems.getItems();
-        final GeneralResponse<List<ItemDto>> items = itemsEntity.getBody();
+        this.mockMvc.perform(get("/api/v1/items")).andDo(print()).andExpect(status().isOk())
+                .andExpect(content().string(
+                        containsString("Verdura")
+                        )
+                );
 
-        assertEquals(items.getStatus(),HttpStatus.OK);
-        assertEquals(items.getBody().size(),2);
-
-    }
-
-    @Test
-    void getItemById() {
-    }
-
-    @Test
-    void deleteItems() {
-    }
-
-    @Test
-    void updateItem() {
-    }
-
-    @Test
-    void createItem() {
+        verify(itemsService).getItems();
     }
 }
